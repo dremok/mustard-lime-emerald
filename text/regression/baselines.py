@@ -1,3 +1,5 @@
+import pandas as pd
+
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import LogisticRegression
@@ -5,7 +7,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 
 
-def tfidf_logreg(train, test, text_col, target_col):
+def tfidf_logreg(train: pd.DataFrame, test: pd.DataFrame, text_col: str, target_col: str):
     train['class'] = train[target_col] >= 0.5
 
     text_clf = Pipeline([

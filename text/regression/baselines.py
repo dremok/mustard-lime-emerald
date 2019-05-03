@@ -8,6 +8,16 @@ from sklearn.pipeline import Pipeline
 
 
 def tfidf_logreg(train: pd.DataFrame, test: pd.DataFrame, text_col: str, target_col: str):
+    """
+    Predict a numerical value between 0 and 1 from text using Logistic Regression on TF-IDF features.
+    Specifically, the model will predict the probability of the target being below or above 0.5.
+
+    :param train: the training set
+    :param test: the test set
+    :param text_col: the column containing the text that will be used as features
+    :param target_col: the column containing the numerical target
+    :return: a tuple containing the test set predictions as well as the mean cross-validation score
+    """
     train['class'] = train[target_col] >= 0.5
 
     text_clf = Pipeline([

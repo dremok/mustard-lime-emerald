@@ -11,6 +11,7 @@ def tfidf_logreg(train: pd.DataFrame, test: pd.DataFrame, text_col: str, target_
     """
     Predict a numerical value between 0 and 1 from text using Logistic Regression on TF-IDF features.
     Specifically, the model will predict the probability of the target being below or above 0.5.
+    Can be used for e.g. sentiment analysis.
 
     :param train: the training set
     :param test: the test set

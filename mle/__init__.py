@@ -1,2 +1,2 @@
-import features
-import text
+from mle import features
+from mle import text

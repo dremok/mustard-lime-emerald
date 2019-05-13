@@ -1,2 +1,4 @@
 # mustard-light-emerald
-Functions and utilities for common DS/ML/AI tasks.
+Utilities for common DS/ML/AI tasks.
+
+No use case is too simple. No solution too opaque.

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mle",
-    version="0.0.2",
+    version="0.0.4",
     author="dremok",
     author_email="max.y.leander@gmail.com",
     description="Utilities for common DS/ML/AI tasks.",

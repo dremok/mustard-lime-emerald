@@ -37,14 +37,15 @@ def tfidf_logreg(train_df: pd.DataFrame, test_df: pd.DataFrame, text_col: str, t
     return predicted, mean_clf_score
 
 
-def tfidf_multiclass(train_df: pd.DataFrame, test_df: pd.DataFrame, text_col: str, target_col: str):
+def tfidf_multiclass(train_df: pd.DataFrame, test_df: pd.DataFrame, text_col: str, target_col: str,
+                     metric='neg_log_loss'):
     text_clf = Pipeline([
         ('vect', CountVectorizer()),
         ('tfidf', TfidfTransformer()),
         ('clf', LogisticRegression()),
     ])
 
-    scores = cross_val_score(text_clf, train_df[text_col], train_df[target_col], cv=3)
+    scores = cross_val_score(text_clf, train_df[text_col], train_df[target_col], cv=3, scoring=metric)
     mean_clf_score = scores.mean()
 
     text_clf.fit(train_df[text_col], train_df[target_col])

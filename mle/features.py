@@ -1,7 +1,11 @@
+from typing import Union, List
+
 import pandas as pd
 
+Num = Union[int, float]
 
-def transform_categorical(train_df: pd.DataFrame, test_df: pd.DataFrame, categorical_columns: [str],
+
+def transform_categorical(train_df: pd.DataFrame, test_df: pd.DataFrame, categorical_columns: List[str],
                           lowest_freq=0.005, one_hot_encode=True):
     """
     Transform categorical features in Pandas dataframes, consistently over train and test data.
@@ -28,4 +32,21 @@ def transform_categorical(train_df: pd.DataFrame, test_df: pd.DataFrame, categor
                 .drop(col, axis=1)
             test_df = pd.concat([test_df, pd.get_dummies(test_df[col], prefix=col)], sort=False, axis=1) \
                 .drop(col, axis=1)
+    return train_df, test_df
+
+
+def transform_numerical(train_df: pd.DataFrame, test_df: pd.DataFrame, numerical_columns: List[Num]):
+    for col in numerical_columns:
+        med = train_df[col].median()
+        train_df[col].fillna(med, inplace=True)
+        test_df[col].fillna(med, inplace=True)
+    return train_df, test_df
+
+
+def transform_sparse_to_boolean(train_df: pd.DataFrame, test_df: pd.DataFrame, to_boolean_columns: List):
+    for col in to_boolean_columns:
+        train_df[col] = train_df[col].notnull().astype('bool')
+        train_df.rename(index=str, columns={col: f'has_{col}'}, inplace=True)
+        test_df[col] = test_df[col].notnull().astype('bool')
+        test_df.rename(index=str, columns={col: f'has_{col}'}, inplace=True)
     return train_df, test_df

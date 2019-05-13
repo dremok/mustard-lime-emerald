@@ -47,7 +47,7 @@ def tfidf_multiclass(train_df: pd.DataFrame, test_df: pd.DataFrame, text_col: st
     scores = cross_val_score(text_clf, train_df[text_col], train_df[target_col], cv=3)
     mean_clf_score = scores.mean()
 
-    text_clf.fit(train_df[text_col], train_df['class'])
+    text_clf.fit(train_df[text_col], train_df[target_col])
 
     predicted = text_clf.predict_proba(test_df[text_col])
 

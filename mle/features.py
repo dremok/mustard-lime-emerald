@@ -36,6 +36,15 @@ def transform_categorical(train_x: pd.DataFrame, test_x: pd.DataFrame, categoric
 
 
 def transform_numerical(train_x: pd.DataFrame, test_x: pd.DataFrame, numerical_columns: List[Num]):
+    """
+    Transform numerical features in Pandas dataframes, consistently over train and test data.
+
+    :param train_x: a Pandas dataframe containing the features of the train set
+    :param test_x: a Pandas dataframe containing the features of the test set
+    :param numerical_columns: columns containing the raw numerical feature data
+
+    :return: a tuple (train_df, test_x) containing the transformed train and test sets
+    """
     for col in numerical_columns:
         med = train_x[col].median()
         train_x[col].fillna(med, inplace=True)
@@ -43,8 +52,18 @@ def transform_numerical(train_x: pd.DataFrame, test_x: pd.DataFrame, numerical_c
     return train_x, test_x
 
 
-def transform_sparse_to_boolean(train_x: pd.DataFrame, test_x: pd.DataFrame, to_boolean_columns: List):
-    for col in to_boolean_columns:
+def transform_sparse_to_boolean(train_x: pd.DataFrame, test_x: pd.DataFrame, sparse_columns: List):
+    """
+    Transform sparse features, containing many NaN or null values, into boolean features. The resulting features
+    are True if the row has a value and false otherwise. Consistent over train and test data.
+
+    :param train_x: a Pandas dataframe containing the features of the train set
+    :param test_x: a Pandas dataframe containing the features of the test set
+    :param sparse_columns: columns containing the raw feature data
+
+    :return: a tuple (train_df, test_x) containing the transformed train and test sets
+    """
+    for col in sparse_columns:
         train_x[col] = train_x[col].notnull().astype('bool')
         train_x.rename(index=str, columns={col: f'has_{col}'}, inplace=True)
         test_x[col] = test_x[col].notnull().astype('bool')

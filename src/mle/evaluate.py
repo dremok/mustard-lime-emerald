@@ -13,5 +13,7 @@ class CrossValidation(Evaluator):
         self._pipeline = pipeline
 
     def evaluate(self, X, y, cv=5):
+        print(f'Evaluating using cross-validation with {cv} folds...', end='')
         scores = cross_val_score(self._pipeline, X, y, cv=cv)
+        print('done!')
         print('Accuracy: %0.2f (+/- %0.2f)' % (scores.mean(), scores.std() * 2))

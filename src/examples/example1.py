@@ -1,4 +1,4 @@
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
 from mle import engine
@@ -9,12 +9,13 @@ from mle.problem_type import ProblemType
 def main():
     model_config = {
         'problem_type': ProblemType.REGRESSION,
-        'model_type': LinearRegression,
+        'model_type': RandomForestRegressor,
         'train_data_path': 'example_data/train.csv',
         'feature_column_tuples': [
             ('LotArea', int),
             ('YearBuilt', int),
-            # ('YrSold', pd.Timestamp),  # TODO: How to specify date format? DateTimeFormat?
+            'HouseStyle',
+            ('YrSold', int),  # TODO: How to specify date format? DateTimeFormat?
             ('SaleCondition', LabelEncoder)
         ],
         'target_column': 'SalePrice',

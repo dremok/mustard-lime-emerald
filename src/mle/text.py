@@ -10,7 +10,7 @@ from sklearn.pipeline import Pipeline
 def predict_numerical_from_text(train_df: pd.DataFrame, test_df: pd.DataFrame, text_col: str, target_col: str):
     """
     Predict a numerical value between 0 and 1 from text using Logistic Regression on TF-IDF features.
-    Specifically, the _pipeline will predict the probability of the target being below or above 0.5.
+    Specifically, the _estimator will predict the probability of the target being below or above 0.5.
     Can be used for e.g. sentiment analysis.
 
     :param train_df: a Pandas dataframe containing the training set

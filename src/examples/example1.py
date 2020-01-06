@@ -1,6 +1,7 @@
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
+import goal_metrics
 from mle import engine
 from mle.problem_type import ProblemType
 
@@ -18,9 +19,10 @@ def main():
             ('SaleCondition', LabelEncoder)
         ],
         'target_column': 'SalePrice',
-        'standardize': True
+        'standardize': True,
+        'goal_metric': goal_metrics.ROOT_MEAN_SQUARED_LOG_ERROR
     }
-    engine.train_model(model_config)
+    engine.execute(model_config)
 
 
 if __name__ == '__main__':

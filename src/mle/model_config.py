@@ -6,7 +6,7 @@ TRAIN_DATA_PATH = 'train_data_path'
 FEATURE_COLUMNS = 'feature_columns'
 TARGET_COLUMN = 'target_column'
 STANDARDIZE = 'standardize'
-EVALUATOR = 'evaluator'
+GOAL_METRIC = 'goal_metric'
 
 
 class ModelConfig:
@@ -17,6 +17,7 @@ class ModelConfig:
         self._feature_columns = model_config[FEATURE_COLUMNS]
         self._target_column = model_config[TARGET_COLUMN]
         self._standardize = model_config[STANDARDIZE]
+        self._goal_metric = model_config[GOAL_METRIC]
 
     @property
     def problem_type(self):
@@ -42,6 +43,10 @@ class ModelConfig:
     def standardize(self):
         return self._standardize
 
+    @property
+    def goal_metric(self):
+        return self._goal_metric
+
     def __repr__(self):
         feature_col_str = ', '.join(
             [f'{x[0]} => {x[1].__name__}' if isinstance(x, tuple)
@@ -51,9 +56,10 @@ class ModelConfig:
         t = self._target_column
         return 'Model Config:\n' + \
                '\n'.join([
-                   f'problem_type = {self._problem_type.value}',
-                   f'model_class = {self._model_class.__name__}',
-                   f'train_data_path = {self._train_data_path}',
+                   f'problem_type = {self.problem_type.value}',
+                   f'model_class = {self.model_class.__name__}',
+                   f'train_data_path = {self.train_data_path}',
                    f'feature_columns = [{feature_col_str}]',
                    f'target_column = {(t[0], t[1].__name__) if isinstance(t, tuple) else t}',
+                   f'goal_metric = {self.goal_metric}',
                ])

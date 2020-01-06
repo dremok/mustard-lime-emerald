@@ -1,4 +1,4 @@
 # MustardLime Emerald
-<center><img src="https://i.ibb.co/JkgGjCR/emerald.png"></center>
+<img src="https://i.ibb.co/JkgGjCR/emerald.png" align="center">
 
 Tool that automatically generates amazing baselines for you machine learning problem.

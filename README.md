@@ -1,4 +1,2 @@
-# mustard-lime-emerald
-Utilities for common DS/ML/AI tasks.
-
-No use case is too simple. No solution too opaque.
+# MustardLime Emerald
+Tool that automatically generates amazing baselines for you machine learning problem.

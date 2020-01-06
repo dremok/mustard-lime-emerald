@@ -1,8 +1,8 @@
 # MustardLime Emerald
 <p align="center">
-  <img width=50% src="https://i.ibb.co/JkgGjCR/emerald.png">
+  <img src="https://i.ibb.co/JkgGjCR/emerald.png">
 </p>
 
-<hl>
+<hr>
 
 Tool that automatically generates amazing baselines for you machine learning problem.

@@ -5,4 +5,4 @@
 <hr>
 
 # MustardLime Emerald
-Tool that automatically generates amazing baselines for you machine learning problem.
+Tool that automatically generates amazing baselines for any Machine Learning problem.

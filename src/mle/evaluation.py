@@ -13,14 +13,14 @@ _metrics_dict = {
 
 
 def evaluate(pipeline: GeneralPipeline, train_df: pd.DataFrame, goal_metric: str, cv=5):
-    print(f'Evaluating using cross-validation with {cv} folds...', end='')
+    print()
+    print(f'Evaluating {pipeline.predictor} using cross-validation with {cv} folds...', end='')
     X = pipeline.prepare_X(train_df)
     y = pipeline.prepare_y(train_df)
 
     scoring_dict = {goal_metric: _metrics_dict[goal_metric]}
-    score_dict = cross_validate(pipeline.estimator, X, y, cv=cv, scoring=scoring_dict)
+    score_dict = cross_validate(pipeline.predictor, X, y, cv=cv, scoring=scoring_dict)
     print('done!')
-    print()
     for metric in scoring_dict:
         scores = score_dict[f'test_{metric}']
         print(f'{metric}: {scores.mean():.4f} (+/- {scores.std() * 2:.4f})')

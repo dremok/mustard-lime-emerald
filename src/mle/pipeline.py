@@ -1,14 +1,17 @@
 from numbers import Number
+from typing import List
 
 import pandas as pd
-from pandas.core.dtypes.common import is_integer_dtype, is_float_dtype, is_string_dtype, is_numeric_dtype
-from sklearn.base import TransformerMixin, BaseEstimator
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelEncoder, scale
+from pandas.api.types import is_integer_dtype, is_float_dtype, is_string_dtype, is_numeric_dtype
+from sklearn.base import TransformerMixin
+from sklearn.impute import KNNImputer
+from sklearn.preprocessing import LabelEncoder
 
 from model_config import ModelConfig
+from transformers import BaseTransformer
 
 
+# TODO: Merge with set default feature names
 def _default_transformer(col, train_df):
     if is_integer_dtype(train_df[col]):
         return int
@@ -19,10 +22,11 @@ def _default_transformer(col, train_df):
 
 
 class GeneralPipeline:
-    def __init__(self, model_config: ModelConfig, train_df: pd.DataFrame):
+    def __init__(self, model_config: ModelConfig, predictor, train_df: pd.DataFrame):
         self._train_dtypes = train_df.dtypes
+        self._id_column = model_config.id_column
         self._feature_column_names = [x[0] if isinstance(x, tuple) else x for x in model_config.feature_column_tuples]
-        self._feature_column_transformers = [
+        self._feature_column_transformers: List[BaseTransformer] = [
             x[1] if isinstance(x, tuple)
             else _default_transformer(x, train_df)
             for x in model_config.feature_column_tuples
@@ -33,30 +37,17 @@ class GeneralPipeline:
         else:
             self._target_column_name = model_config.target_column
             self._target_column_transformer = _default_transformer(self._target_column_name, train_df)
-        self._standardize = model_config.standardize
-        self._model: BaseEstimator = model_config.model_class()
-        self._estimator = Pipeline([(model_config.model_class.__name__, self._model)])
-
-    @classmethod
-    def create(cls, model_config: ModelConfig, train_df: pd.DataFrame):
-        return GeneralPipeline(model_config, train_df)
+        self._predictor = predictor
 
     @property
-    def estimator(self):
-        return self._estimator
+    def predictor(self):
+        return self._predictor
 
-    def prepare_X(self, df):
-        # TODO: Validate that dtypes is same as in training
-        features_df = df[self._feature_column_names].copy()
-        for col_name, col_transformer in zip(self._feature_column_names, self._feature_column_transformers):
-            feature_col = features_df[col_name]
-            if issubclass(col_transformer, Number):
-                feature_col.astype(col_transformer)
-            elif issubclass(col_transformer, TransformerMixin):
-                features_df.loc[:, col_name] = col_transformer().fit_transform(feature_col)
-            if self._standardize and is_numeric_dtype(features_df[col_name]):
-                features_df.loc[:, col_name] = scale(features_df.loc[:, col_name])
-        X = features_df[self._feature_column_names].values
+    def prepare_X(self, train_df, test_df=None):
+        features_df = self._transform_features(train_df)
+        if test_df is not None:
+            features_df = self._remove_features_not_in_test(features_df, test_df)
+        X = features_df.values
         return X
 
     def prepare_y(self, df):
@@ -67,3 +58,42 @@ class GeneralPipeline:
             df.loc[:, self._target_column_transformer] = self._target_column_transformer().fit_transform(target_col)
         y = target_col.values.ravel()
         return y
+
+    def _transform_features(self, df):
+        df = df[self._feature_column_names].copy()
+        cols_with_missing = [col for col in df.columns if df[col].isnull().any()]
+        for col in cols_with_missing:
+            df[f'{col}_missing'] = df[col].isnull()
+        numeric_cols = [col for col in self._feature_column_names if is_numeric_dtype(df[col])]
+        df.loc[:, numeric_cols] = KNNImputer().fit_transform(df[numeric_cols])
+        for col_name, col_transformer in zip(self._feature_column_names, self._feature_column_transformers):
+            df = col_transformer.transform(df, col_name)
+        return df
+
+    def _remove_features_not_in_test(self, features_df, test_df):
+        test_df = self._transform_features(test_df)
+        features_df = features_df.drop([x for x in features_df.columns if x not in test_df.columns], axis=1)
+        return features_df
+
+    def fit(self, train_df, test_df=None):
+        X = self.prepare_X(train_df, test_df)
+        y = self.prepare_y(train_df)
+        self.predictor.fit(X, y)
+
+    def predict(self, test_df: pd.DataFrame):
+        X = self.prepare_X(test_df)
+        predictions = pd.DataFrame(self.predictor.predict(X))
+        if self._id_column:
+            predictions = pd.concat([test_df[[self._id_column]], predictions], axis=1)
+        predictions.columns = [self._id_column, self._target_column_name]
+        return predictions
+
+    def train_predict(self, train_df, test_df):
+        print()
+        print('Training model on entire dataset...', end='')
+        self.fit(train_df, test_df)
+        print('done!')
+        print('Predicting on test set...', end='')
+        predictions = self.predict(test_df)
+        print('done!')
+        predictions.to_csv('submission.csv', index=False)

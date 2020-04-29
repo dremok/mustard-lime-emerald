@@ -27,7 +27,7 @@ def execute(model_config_dict):
             evaluation.evaluate(pipeline, train_df, model_config.goal_metric)
 
     pipeline: GeneralPipeline = GeneralPipeline(model_config, model_config.model_class(), train_df)
-    evaluation.evaluate(pipeline, train_df, model_config.goal_metric)
+    # evaluation.evaluate(pipeline, main_df, model_config.goal_metric)
 
     df = pd.read_csv('./example_data/test.csv')
     pipeline.train_predict(train_df, df)

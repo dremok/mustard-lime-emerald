@@ -16,7 +16,7 @@ def transform_categorical(train_x: pd.DataFrame, test_x: pd.DataFrame, categoric
     :param lowest_freq: values with less occurences than this frequency will be replace by 'other'
     :param one_hot_encode: if True, one-hot-encode the categorical columns and drop the original ones
 
-    :return: a tuple (train_df, test_x) containing the transformed train and test sets
+    :return: a tuple (main_df, test_x) containing the transformed train and test sets
     """
     for col in categorical_columns:
         train_x[col] = train_x[col].fillna('missing').str.lower().str.strip().str.replace('[^a-z0-9 ]', '')
@@ -43,7 +43,7 @@ def transform_numerical(train_x: pd.DataFrame, test_x: pd.DataFrame, numerical_c
     :param test_x: a Pandas dataframe containing the features of the test set
     :param numerical_columns: columns containing the raw numerical feature data
 
-    :return: a tuple (train_df, test_x) containing the transformed train and test sets
+    :return: a tuple (main_df, test_x) containing the transformed train and test sets
     """
     for col in numerical_columns:
         med = train_x[col].median()
@@ -61,7 +61,7 @@ def transform_sparse_to_boolean(train_x: pd.DataFrame, test_x: pd.DataFrame, spa
     :param test_x: a Pandas dataframe containing the features of the test set
     :param sparse_columns: columns containing the raw feature data
 
-    :return: a tuple (train_df, test_x) containing the transformed train and test sets
+    :return: a tuple (main_df, test_x) containing the transformed train and test sets
     """
     for col in sparse_columns:
         train_x[col] = train_x[col].notnull().astype('bool')

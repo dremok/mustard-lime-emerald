@@ -43,10 +43,10 @@ class GeneralPipeline:
     def predictor(self):
         return self._predictor
 
-    def prepare_X(self, train_df, test_df=None):
-        features_df = self._transform_features(train_df)
-        if test_df is not None:
-            features_df = self._remove_features_not_in_test(features_df, test_df)
+    def prepare_X(self, main_df, other_df=None):
+        features_df = self._transform_features(main_df)
+        if other_df is not None:
+            features_df = self._remove_features_not_in_test(features_df, other_df)
         X = features_df.values
         return X
 
@@ -80,8 +80,8 @@ class GeneralPipeline:
         y = self.prepare_y(train_df)
         self.predictor.fit(X, y)
 
-    def predict(self, test_df: pd.DataFrame):
-        X = self.prepare_X(test_df)
+    def predict(self, test_df: pd.DataFrame, train_df: pd.DataFrame):
+        X = self.prepare_X(test_df, train_df)
         predictions = pd.DataFrame(self.predictor.predict(X))
         if self._id_column:
             predictions = pd.concat([test_df[[self._id_column]], predictions], axis=1)
@@ -94,6 +94,6 @@ class GeneralPipeline:
         self.fit(train_df, test_df)
         print('done!')
         print('Predicting on test set...', end='')
-        predictions = self.predict(test_df)
+        predictions = self.predict(test_df, train_df)
         print('done!')
         predictions.to_csv('submission.csv', index=False)
